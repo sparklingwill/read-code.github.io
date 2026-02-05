@@ -648,3 +648,164 @@ code.hljs {
 body.resizing-active iframe {
     pointer-events: none;
 }
+
+/* Pulse Animation for Focus */
+@keyframes pulse-border {
+    0% {
+        box-shadow: 0 0 0 0px rgba(56, 189, 248, 0.4);
+        border-color: var(--accent);
+    }
+
+    50% {
+        box-shadow: 0 0 0 6px rgba(56, 189, 248, 0.3);
+        border-color: #facc15;
+    }
+
+    100% {
+        box-shadow: 0 0 0 0px rgba(56, 189, 248, 0.4);
+        border-color: var(--accent);
+    }
+}
+
+.pulse-focus {
+    animation: pulse-border 1.5s infinite ease-in-out;
+    border: 2px solid var(--accent) !important;
+    z-index: 50;
+}
+
+/* Toggle Switch Styles */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 28px;
+    flex-shrink: 0;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(30, 41, 59, 0.5);
+    border: 1px solid var(--text-secondary);
+    /* Visible border when off */
+    transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 4px;
+    bottom: 3px;
+    background-color: var(--text-secondary);
+    transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+input:checked+.slider {
+    background-color: var(--accent);
+    /* Sky Blue */
+    border-color: var(--accent);
+}
+
+input:checked+.slider:before {
+    transform: translateX(24px);
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Hover & Focus state */
+.switch:hover .slider:before {
+    background-color: #fff;
+}
+
+input:focus+.slider {
+    box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+/* Toggle Button (Text Inside) Styles */
+.toggle-button-label {
+    position: relative;
+    display: inline-flex;
+    cursor: pointer;
+    user-select: none;
+}
+
+.toggle-button-label input {
+    display: none;
+    /* Hide real checkbox */
+}
+
+.toggle-button-label .btn-content {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.6rem 1.2rem;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    /* Slightly rounded rect or pill */
+    color: var(--text-secondary);
+    font-family: var(--font-ui);
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 100px;
+    /* Consistent width */
+}
+
+/* Hover */
+.toggle-button-label:hover .btn-content {
+    background: rgba(30, 41, 59, 1);
+    border-color: var(--text-secondary);
+}
+
+/* Checked State */
+.toggle-button-label input:checked+.btn-content {
+    background: var(--accent);
+    color: #0f172a;
+    border-color: var(--accent);
+    font-weight: 600;
+    box-shadow: 0 2px 8px var(--accent-glow);
+}
+
+/* Toggle Icons */
+.btn-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    stroke-width: 3;
+    transition: all 0.2s ease;
+}
+
+/* Default State (Unchecked) => Show Cross, Hide Check */
+.icon-check {
+    display: none;
+}
+
+.icon-cross {
+    display: block;
+    opacity: 0.6;
+}
+
+/* Checked State => Show Check, Hide Cross */
+.toggle-button-label input:checked+.btn-content .icon-check {
+    display: block;
+}
+
+.toggle-button-label input:checked+.btn-content .icon-cross {
+    display: none;
+}

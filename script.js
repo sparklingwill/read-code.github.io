@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Elements - Sidebar & Settings
     const autoCopyToggle = document.getElementById('auto-copy-toggle');
     const autoHighlightToggle = document.getElementById('auto-highlight-toggle');
-    const toggleSidebarBtn = document.getElementById('toggle-sidebar-btn');
+    // const toggleSidebarBtn = document.getElementById('toggle-sidebar-btn'); // Removed
     const closeSidebarBtn = document.getElementById('close-sidebar-btn');
     const sidebar = document.getElementById('ai-sidebar');
     const agentSelector = document.getElementById('agent-selector');
@@ -132,7 +132,10 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Listeners for New Inputs
-    autoFormatToggle.addEventListener('change', saveState);
+    autoFormatToggle.addEventListener('change', () => {
+        if (autoFormatToggle.checked) autoCopyToggle.checked = false;
+        saveState();
+    });
     queryTemplateInput.addEventListener('input', saveState);
 
     // Helper to get correct Gemini URL
@@ -327,21 +330,41 @@ document.addEventListener('DOMContentLoaded', () => {
     const sidebarHeader = document.querySelector('.sidebar-header h3');
 
     const toggleSidebar = (show) => {
+        const toggleInput = document.getElementById('sidebar-toggle-input');
+        if (toggleInput) toggleInput.checked = show;
+
         if (show) {
             sidebar.classList.remove('hidden');
             mainContainer.classList.add('sidebar-open');
             if (sidebarHeader) sidebarHeader.classList.add('text-glow');
 
-            // If opening and no agent loaded (or just to ensure), load Gemini or current
             if (!activeAgent) activeAgent = 'gemini';
             switchAgent(activeAgent);
+
+            // Ensure layout syncs with current width
+            const width = sidebar.offsetWidth || 400;
+            mainContainer.style.marginRight = `${width}px`;
+            mainContainer.style.width = `calc(100% - ${width}px)`;
         } else {
             sidebar.classList.add('hidden');
             mainContainer.classList.remove('sidebar-open');
             if (sidebarHeader) sidebarHeader.classList.remove('text-glow');
+
+            // Allow CSS to control layout (centering)
+            mainContainer.style.marginRight = '';
+            mainContainer.style.width = '';
         }
+        if (typeof updateToggleIcon === 'function') updateToggleIcon(show);
         saveState();
     };
+
+    // Listener for Sidebar Toggle Input
+    const sidebarToggleInput = document.getElementById('sidebar-toggle-input');
+    if (sidebarToggleInput) {
+        sidebarToggleInput.addEventListener('change', () => {
+            toggleSidebar(sidebarToggleInput.checked);
+        });
+    }
 
     // Unified Opener for External Agents
     window.agentWindows = window.agentWindows || {};
@@ -399,7 +422,7 @@ document.addEventListener('DOMContentLoaded', () => {
             agentPlaceholder.style.display = 'flex';
             const cleanName = agentKey.charAt(0).toUpperCase() + agentKey.slice(1);
 
-            let autoCopyText = "If <strong>Auto-Copy & Format</strong> is enabled, selecting text will also trigger this window.";
+            let autoCopyText = "If <strong>Auto Copy & Switch to AI</strong> is enabled, selecting text will also trigger this window.";
             if (agentKey === 'chatgpt') {
                 autoCopyText += ` <br><span style="color: #ef4444; font-weight: 500;">(Note: ChatGPT opens a NEW window for every auto-trigger).</span>`;
             }
@@ -523,6 +546,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // 1. Gemini: Open Sidebar & Focus
+        // Note: We cannot pre-fill the chat input due to Cross-Origin (CORS) security restrictions.
+        // Gemini also does not support a public URL parameter (like ?q=...) for the web UI.
         if (currentAgent === 'gemini') {
             // Open sidebar if closed
             if (sidebar.classList.contains('hidden')) {
@@ -535,9 +560,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 const targetFrame = document.getElementById(`frame-${currentAgent}`);
                 if (targetFrame) {
                     document.activeElement.blur();
-                    targetFrame.style.boxShadow = "0 0 0 4px var(--accent)";
-                    setTimeout(() => { targetFrame.style.boxShadow = "none"; }, 500);
-                    targetFrame.focus();
+
+                    // Visual Cue: Pulse
+                    targetFrame.classList.remove('pulse-focus'); // Reset
+                    void targetFrame.offsetWidth; // Force Reflow
+                    targetFrame.classList.add('pulse-focus');
+                    targetFrame.setAttribute('data-pulse-start', Date.now().toString()); // Timestamp
+                    setTimeout(() => { targetFrame.classList.remove('pulse-focus'); }, 4000);
+
+                    // Aggressive Focus Strategy
+                    const tryFocus = () => {
+                        targetFrame.focus();
+                        if (targetFrame.contentWindow) targetFrame.contentWindow.focus();
+                    };
+
+                    tryFocus();
+                    [100, 300, 600].forEach(delay => setTimeout(tryFocus, delay));
                     if (targetFrame.contentWindow) targetFrame.contentWindow.focus();
                     showToast(`Ready to Paste! (Ctrl+V)`, 3000);
                 }
@@ -562,54 +600,63 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // --- Auto Selection Logic ---
-    const handleSelection = () => {
+    const handleSelection = (e) => {
         // Guard: Only run in Rendered View
         if (outputView.classList.contains('hidden-view')) return;
+
+        // Guard: Ignore interactions with Sidebar or Toolbar
+        if (e && e.target) {
+            if (e.target.closest('.settings-bar')) return;
+            const sidebarEl = document.getElementById('ai-sidebar');
+            if (sidebarEl && sidebarEl.contains(e.target)) return;
+        }
 
         const selection = window.getSelection();
         const text = selection.toString().trim();
 
         if (text.length > 0) {
+            // Re-query toggles to ensure fresh state
+            const highlightToggle = document.getElementById('auto-highlight-toggle');
+            const copyToggle = document.getElementById('auto-copy-toggle');
+            const formatToggle = document.getElementById('auto-format-toggle');
+            const templateInput = document.getElementById('query-template'); // Query template too
+
             // Auto Highlight
-            if (autoHighlightToggle.checked && CSS.highlights) {
+            if (highlightToggle && highlightToggle.checked && CSS.highlights) {
                 const range = selection.getRangeAt(0);
                 const highlight = new Highlight(range);
                 CSS.highlights.set("autohighlight-marker", highlight);
             }
 
-            // Auto Copy / Auto Query
-            if (autoCopyToggle.checked || autoFormatToggle.checked) {
-                // Debounce
+            // Auto Copy / Format Trigger
+            const isCopy = copyToggle && copyToggle.checked;
+            const isFormat = formatToggle && formatToggle.checked;
+
+            if (isCopy || isFormat) {
+                // Debounce to avoid rapid firing while dragging
                 if (window.copyTimeout) clearTimeout(window.copyTimeout);
                 window.copyTimeout = setTimeout(() => {
 
-                    // Determine content
-                    const template = queryTemplateInput.value || 'What does "{text}" mean';
-                    const formattedText = template.replace('{text}', text);
-
-                    if (autoFormatToggle.checked) {
+                    if (isFormat) {
+                        const template = (templateInput && templateInput.value) || 'What does "{text}" mean';
+                        const formattedText = template.replace('{text}', text);
                         // "Auto-Copy & Format" -> Invoke AI (includes formatting)
                         activateAI(formattedText);
-                    } else if (autoCopyToggle.checked) {
-                        // Just Copy (Original text only?) Or formatted?
-                        // User likely expects "Auto Copy" = Copy Raw.
+                        window.getSelection().removeAllRanges(); // Consume selection
+                    } else { // isCopy (Exclusive due to previous logic, but fallback safe)
+                        // Just Copy Raw
                         secureCopy(text).then(success => {
                             if (success) showToast("Auto-Copied!", 1500);
+                            window.getSelection().removeAllRanges(); // Consume selection
                         });
                     }
-                }, 600); // Slightly longer delay for auto-invoke comfort
+                }, 600);
             }
         }
     };
 
     // Sidebar
-    toggleSidebarBtn.addEventListener('click', () => {
-        const isOpening = sidebar.classList.contains('hidden');
-        toggleSidebar(isOpening);
-        if (isOpening && !activeAgent) {
-            switchAgent(agentSelector.value);
-        }
-    });
+
 
     closeSidebarBtn.addEventListener('click', () => toggleSidebar(false));
 
@@ -624,7 +671,10 @@ document.addEventListener('DOMContentLoaded', () => {
         saveState();
     });
 
-    autoCopyToggle.addEventListener('change', saveState);
+    autoCopyToggle.addEventListener('change', () => {
+        if (autoCopyToggle.checked) autoFormatToggle.checked = false;
+        saveState();
+    });
 
     autoHighlightToggle.addEventListener('change', () => {
         saveState();
@@ -707,7 +757,23 @@ document.addEventListener('DOMContentLoaded', () => {
         document.head.appendChild(style);
     }
 
-    // Fix: Overwrite helper to use unique window names (fix for ChatGPT refresh)
+
+
+    // Cancel pulse animation when focus moves to an iframe (User clicked or Auto-focus succeeded)
+    window.addEventListener('blur', () => {
+        const active = document.activeElement;
+        if (active && active.tagName === 'IFRAME') {
+            const startStr = active.getAttribute('data-pulse-start');
+            const now = Date.now();
+            // Minimum blink time (1.2s) before allowing focus to cancel it
+            if (startStr && (now - parseInt(startStr) < 1200)) {
+                return;
+            }
+            active.classList.remove('pulse-focus');
+        }
+    });
+
+    // Helper for External Agent Opening
     window.openExternalAgent = (agentKey) => {
         const url = agentUrls[agentKey];
         if (!url) return;

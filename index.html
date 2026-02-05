@@ -19,7 +19,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=20260205">
 </head>
 
 <body>
@@ -29,7 +29,12 @@
     <main class="container">
         <header class="header">
             <h1><span class="highlight">Code</span>Reader</h1>
-            <p>Paste, Read, & Ask AI</p>
+            <p
+                style="max-width: 600px; margin: 0 auto; color: var(--text-secondary); line-height: 1.5; font-size: 0.95rem;">
+                Render raw code into a clean, readable format. Use tools like <strong>Auto-Copy</strong> &
+                <strong>Auto-Highlight</strong> to speed up your workflow, and ask AI questions about any code snippet
+                directly in the side panel.
+            </p>
 
             <div style="display: flex; align-items: center; gap: 1rem; margin-top: 0.5rem;">
                 <!-- GitHub Link -->
@@ -78,39 +83,69 @@
 
         <!-- Sticky Controls -->
         <div class="settings-bar" id="sticky-toolbar">
-            <div class="toggle-wrapper" title="Automatically copy selected text">
-                <label class="switch">
-                    <input type="checkbox" id="auto-copy-toggle">
-                    <span class="slider round"></span>
-                </label>
-                <span class="toggle-label">Auto Copy</span>
-            </div>
+            <label class="toggle-button-label" title="Simple highlight for your selection">
+                <input type="checkbox" id="auto-highlight-toggle" checked>
+                <span class="btn-content">
+                    <svg class="btn-icon icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <svg class="btn-icon icon-cross" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                    Auto Highlight
+                </span>
+            </label>
 
-            <div class="toggle-wrapper" title="Simple highlight for your selection">
-                <label class="switch">
-                    <input type="checkbox" id="auto-highlight-toggle" checked>
-                    <span class="slider round"></span>
-                </label>
-                <span class="toggle-label">Auto Highlight</span>
-            </div>
+            <label class="toggle-button-label" title="Automatically copy selected text">
+                <input type="checkbox" id="auto-copy-toggle">
+                <span class="btn-content">
+                    <svg class="btn-icon icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <svg class="btn-icon icon-cross" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                    Auto Copy
+                </span>
+            </label>
 
-            <div class="toggle-wrapper" title="Apply template, copy, and open AI">
-                <label class="switch">
-                    <input type="checkbox" id="auto-format-toggle">
-                    <span class="slider round"></span>
-                </label>
-                <span class="toggle-label">Auto-Copy & Format</span>
-            </div>
+            <label class="toggle-button-label" title="Apply template, copy, and open AI">
+                <input type="checkbox" id="auto-format-toggle">
+                <span class="btn-content">
+                    <svg class="btn-icon icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <svg class="btn-icon icon-cross" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                    Auto Copy & Switch to AI
+                </span>
+            </label>
 
-            <button id="toggle-sidebar-btn" class="secondary-btn">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="18" y="3" width="4" height="18"></rect>
-                    <line x1="10" y1="12" x2="22" y2="12"></line>
-                    <line x1="6" y1="12" x2="2" y2="12"></line>
-                </svg>
-                <span>AI Sidebar</span>
-            </button>
+            <label class="toggle-button-label" title="Show/Hide AI Sidebar">
+                <input type="checkbox" id="sidebar-toggle-input">
+                <span class="btn-content">
+                    <svg class="btn-icon icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <svg class="btn-icon icon-cross" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                    AI Sidebar
+                </span>
+            </label>
 
             <!-- Help Button -->
             <div class="help-wrapper" style="position: relative; margin-left: 0.5rem;">
@@ -130,6 +165,10 @@
                     <h3
                         style="margin-top: 0; margin-bottom: 1rem; font-size: 1rem; color: var(--accent); border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
                         Feature Guide</h3>
+                    <p
+                        style="margin-bottom: 1rem; font-size: 0.8rem; color: #ef4444; font-weight: 500; line-height: 1.4;">
+                        ⚠️ These features are only active after clicking <strong>Render View</strong> (Output Mode).
+                    </p>
                     <ul
                         style="padding-left: 1rem; font-size: 0.85rem; color: var(--text-primary); display: flex; flex-direction: column; gap: 0.8rem; margin: 0; line-height: 1.4;">
                         <li>
@@ -143,7 +182,7 @@
                                 only).</span>
                         </li>
                         <li>
-                            <strong style="color: #a855f7;">Auto-Copy & Format:</strong>
+                            <strong style="color: #a855f7;">Auto Copy & Switch to AI:</strong>
                             <span style="color: var(--text-secondary);">Formats text via template, copies it, and opens
                                 the AI Agent automatically.</span>
                         </li>
@@ -279,7 +318,7 @@
         </div>
     </aside>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=2.1"></script>
 </body>
 
 </html>
