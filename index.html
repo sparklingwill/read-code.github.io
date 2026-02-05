@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Beautifier & Reader</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- Highlight.js for syntax highlighting -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="background-glob"></div>
+    <div class="background-glob glob-2"></div>
+
+    <main class="container">
+        <header class="header">
+            <h1><span class="highlight">Code</span>Reader</h1>
+            <p>Paste, Read, & Ask AI</p>
+
+            <div style="display: flex; align-items: center; gap: 1rem; margin-top: 0.5rem;">
+                <!-- GitHub Link -->
+                <a href="https://github.com/sparklingwill/read-code.github.io" target="_blank"
+                    aria-label="GitHub Repository"
+                    style="color: var(--text-secondary); display: flex; align-items: center; justify-content: center; transition: all 0.2s; padding: 0.5rem; border-radius: 50%; border: 1px solid transparent;"
+                    onmouseover="this.style.color='#f1f5f9'; this.style.backgroundColor='rgba(255,255,255,0.05)'; this.style.borderColor='var(--border-color)'"
+                    onmouseout="this.style.color='var(--text-secondary)'; this.style.backgroundColor='transparent'; this.style.borderColor='transparent'">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+                        </path>
+                    </svg>
+                </a>
+
+                <!-- Support Button -->
+                <a href="https://buymeacoffee.com/sparklingwill" target="_blank" style="
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    background-color: #EAB308;
+                    color: #000000;
+                    font-family: 'Inter', sans-serif;
+                    font-weight: 600;
+                    font-size: 0.9rem;
+                    padding: 0.5rem 1rem;
+                    border-radius: 8px;
+                    text-decoration: none;
+                    box-shadow: 0 4px 12px rgba(234, 179, 8, 0.2);
+                    transition: transform 0.2s ease, box-shadow 0.2s ease;
+                " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(234, 179, 8, 0.3)'"
+                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(234, 179, 8, 0.2)'">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+                        <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+                        <line x1="6" y1="1" x2="6" y2="4"></line>
+                        <line x1="10" y1="1" x2="10" y2="4"></line>
+                        <line x1="14" y1="1" x2="14" y2="4"></line>
+                    </svg>
+                    Buy me a coffee
+                </a>
+            </div>
+        </header>
+
+        <!-- Sticky Controls -->
+        <div class="settings-bar" id="sticky-toolbar">
+            <div class="toggle-wrapper" title="Automatically copy selected text">
+                <label class="switch">
+                    <input type="checkbox" id="auto-copy-toggle">
+                    <span class="slider round"></span>
+                </label>
+                <span class="toggle-label">Auto Copy</span>
+            </div>
+
+            <div class="toggle-wrapper" title="Simple highlight for your selection">
+                <label class="switch">
+                    <input type="checkbox" id="auto-highlight-toggle" checked>
+                    <span class="slider round"></span>
+                </label>
+                <span class="toggle-label">Auto Highlight</span>
+            </div>
+
+            <div class="toggle-wrapper" title="Apply template, copy, and open AI">
+                <label class="switch">
+                    <input type="checkbox" id="auto-format-toggle">
+                    <span class="slider round"></span>
+                </label>
+                <span class="toggle-label">Auto-Copy & Format</span>
+            </div>
+
+            <button id="toggle-sidebar-btn" class="secondary-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="18" y="3" width="4" height="18"></rect>
+                    <line x1="10" y1="12" x2="22" y2="12"></line>
+                    <line x1="6" y1="12" x2="2" y2="12"></line>
+                </svg>
+                <span>AI Sidebar</span>
+            </button>
+
+            <!-- Help Button -->
+            <div class="help-wrapper" style="position: relative; margin-left: 0.5rem;">
+                <button id="help-btn" class="icon-btn"
+                    style="width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; color: var(--text-secondary); cursor: pointer; transition: all 0.2s;"
+                    title="Help & Usage">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                </button>
+
+                <div id="help-dropdown" class="hidden"
+                    style="position: absolute; top: 140%; right: 0; width: 340px; background: #0f172a; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; box-shadow: 0 10px 40px rgba(0,0,0,0.6); z-index: 999; text-align: left; cursor: default;">
+                    <h3
+                        style="margin-top: 0; margin-bottom: 1rem; font-size: 1rem; color: var(--accent); border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+                        Feature Guide</h3>
+                    <ul
+                        style="padding-left: 1rem; font-size: 0.85rem; color: var(--text-primary); display: flex; flex-direction: column; gap: 0.8rem; margin: 0; line-height: 1.4;">
+                        <li>
+                            <strong style="color: #38bdf8;">Auto Copy:</strong>
+                            <span style="color: var(--text-secondary);">Instantly copies raw selected text to
+                                clipboard.</span>
+                        </li>
+                        <li>
+                            <strong style="color: #facc15;">Auto Highlight:</strong>
+                            <span style="color: var(--text-secondary);">Highlights selections in yellow (Reader View
+                                only).</span>
+                        </li>
+                        <li>
+                            <strong style="color: #a855f7;">Auto-Copy & Format:</strong>
+                            <span style="color: var(--text-secondary);">Formats text via template, copies it, and opens
+                                the AI Agent automatically.</span>
+                        </li>
+                    </ul>
+                    <div
+                        style="margin-top: 1rem; padding-top: 0.8rem; border-top: 1px solid var(--border-color); font-size: 0.8rem; color: var(--text-secondary); font-style: italic;">
+                        Tip: Edit the <strong>Query Template</strong> in the AI Sidebar to customize formatting.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- View Container -->
+        <div id="app-views" class="views-container">
+
+            <!-- INPUT VIEW -->
+            <section id="input-view" class="view active-view">
+                <div class="panel input-panel">
+                    <div class="panel-header">
+                        <span class="label">Source Code</span>
+                        <div class="actions">
+                            <button id="clear-btn" class="secondary-btn">Clear</button>
+                            <button id="paste-btn" class="secondary-btn">Paste</button>
+                        </div>
+                    </div>
+                    <textarea id="code-input" placeholder="Paste your raw code here..."></textarea>
+
+                    <div class="view-footer">
+                        <button id="render-btn" class="primary-btn pulse-glow">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                            </svg>
+                            Render View
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- OUTPUT VIEW -->
+            <section id="output-view" class="view hidden-view">
+                <div class="panel output-panel">
+                    <div class="panel-header">
+                        <div class="header-left">
+                            <button id="back-edit-btn" class="secondary-btn back-btn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M11 17l-5-5 5-5M18 17l-5-5 5-5" />
+                                </svg>
+                                Edit Source
+                            </button>
+                            <span id="language-badge" class="badge">Detected: None</span>
+                        </div>
+                        <button id="copy-btn" class="secondary-btn">Copy</button>
+                    </div>
+                    <div class="code-wrapper" id="content-area">
+                        <pre><code id="code-output" class="hljs"></code></pre>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- AI Agent Sidebar -->
+    <aside id="ai-sidebar" class="sidebar hidden">
+        <!-- Resizer Handle -->
+        <div id="sidebar-resizer" class="sidebar-resizer"></div>
+
+        <!-- Fold/Unfold Handle -->
+        <button id="sidebar-toggle-handle" class="sidebar-toggle" title="Toggle Sidebar (Ctrl+B)">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </button>
+
+        <div class="sidebar-header">
+            <h3>AI Assistant</h3>
+            <button id="close-sidebar-btn" class="icon-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+
+        <div class="agent-controls">
+            <select id="agent-selector" class="agent-select" style="flex: 2;">
+                <option value="gemini">Google Gemini</option>
+                <option value="grok">xAI Grok</option>
+                <option value="chatgpt">ChatGPT</option>
+                <option value="perplexity">Perplexity AI</option>
+            </select>
+
+            <!-- Account Switcher (Only visible for Gemini) -->
+            <div id="account-controls-wrapper" style="flex: 1; display: flex; align-items: center; gap: 0.25rem;">
+                <select id="account-selector" class="agent-select"
+                    style="flex: 1; margin-left: 0.5rem; font-size: 0.85rem;" title="Google Account Index">
+                    <option value="0">Acc 0</option>
+                    <option value="1">Acc 1</option>
+                    <option value="2">Acc 2</option>
+                </select>
+                <button id="rename-account-btn" class="icon-btn" title="Rename this account label"
+                    style="padding: 0.4rem;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Template Configuration -->
+        <div class="template-config"
+            style="padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); background: rgba(15, 23, 42, 0.4);">
+            <label style="display: block; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Query
+                Template (e.g. what does {text} mean)</label>
+            <textarea id="query-template"
+                style="width: 100%; height: 60px; background: #1e293b; border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 0.5rem; padding: 0.5rem; font-family: var(--font-ui); font-size: 0.85rem; resize: vertical;">What does "{text}" mean</textarea>
+        </div>
+
+        <div class="agents-container">
+            <!-- Iframes will be populated here by JS -->
+            <div id="agent-placeholder" class="agent-placeholder">
+                <p>Select an agent to load its interface.</p>
+                <p class="warning-text">Note: Some providers may block embedding.</p>
+            </div>
+            <iframe id="frame-gemini" class="agent-frame hidden-frame" src=""></iframe>
+            <iframe id="frame-grok" class="agent-frame hidden-frame" src=""></iframe>
+            <iframe id="frame-chatgpt" class="agent-frame hidden-frame" src=""></iframe>
+            <iframe id="frame-perplexity" class="agent-frame hidden-frame" src=""></iframe>
+        </div>
+    </aside>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

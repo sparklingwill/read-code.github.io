@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opening Agent...</title>
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+
+        .loader {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: #38bdf8;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 2rem;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="loader"></div>
+    <p>Redirecting to <span id="target-name">AI Agent</span>...</p>
+    <script>
+        // Get URL param
+        const params = new URLSearchParams(window.location.search);
+        const targetUrl = params.get('url');
+        const name = params.get('name') || 'AI Agent';
+
+        document.getElementById('target-name').textContent = name;
+
+        if (targetUrl) {
+            // Use replace to keep history clean(ish)
+            // Small delay to ensure window handle is registered by opener?
+            setTimeout(() => {
+                window.location.replace(targetUrl);
+            }, 500);
+        } else {
+            document.body.innerText = "No target URL specified.";
+        }
+    </script>
+</body>
+
+</html>
