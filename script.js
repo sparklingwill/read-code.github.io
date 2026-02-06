@@ -12,6 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const copyBtn = document.getElementById('copy-btn');
     const backEditBtn = document.getElementById('back-edit-btn');
     const langBadge = document.getElementById('language-badge');
+    const structureSidebar = document.getElementById('structure-sidebar');
+    const structureList = document.getElementById('structure-list');
+    const structureToggleBtn = document.getElementById('structure-toggle-btn');
 
     const contentArea = document.getElementById('content-area'); // New wrapper
 
@@ -318,12 +321,51 @@ document.addEventListener('DOMContentLoaded', () => {
             codeOutput.innerHTML = result.value;
             langBadge.textContent = 'Detected: ' + (result.language ? result.language : 'Plain Text');
             codeOutput.className = 'hljs language-' + (result.language || 'text');
+
+            // --- Structure Analysis (Language Analyzer) ---
+            if (structureList) structureList.innerHTML = '';
+            // Heuristic to find interesting nodes (titles, sections, classes)
+            const symbols = codeOutput.querySelectorAll('.hljs-title, .hljs-section, .hljs-selector-class, .hljs-selector-id');
+
+            if (symbols.length > 0 && structureSidebar) {
+                structureSidebar.classList.remove('hidden');
+                symbols.forEach((el, index) => {
+                    const id = `sym-${index}`;
+                    el.id = id; // Add scroll anchor
+
+                    const item = document.createElement('button');
+                    item.className = 'structure-item';
+                    item.textContent = el.textContent.substring(0, 40);
+                    item.title = el.textContent;
+
+                    item.onclick = () => {
+                        const target = document.getElementById(id);
+                        if (target) {
+                            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            target.style.backgroundColor = 'rgba(253, 224, 71, 0.4)';
+                            setTimeout(() => target.style.backgroundColor = '', 1500);
+                        }
+                    };
+
+                    structureList.appendChild(item);
+                });
+            } else if (structureSidebar) {
+                structureSidebar.classList.add('hidden');
+            }
+
             switchView('output');
         } catch (e) {
             console.error(e);
             langBadge.textContent = 'Error parsing';
         }
     };
+
+    // Toggle Structure Sidebar
+    if (structureToggleBtn && structureSidebar) {
+        structureToggleBtn.addEventListener('click', () => {
+            structureSidebar.classList.toggle('collapsed');
+        });
+    }
 
     // --- Sidebar & Agent Functions ---
 

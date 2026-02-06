@@ -29,9 +29,10 @@ body {
     background-color: var(--bg-color);
     color: var(--text-primary);
     font-family: var(--font-ui);
-    min-height: 100vh;
-    overflow-x: clip;
-    /* Fix: 'hidden' breaks sticky! 'clip' is safe. */
+    height: 100vh;
+    /* Fixed App Height */
+    overflow: hidden;
+    /* No Page Scroll */
     position: relative;
     display: flex;
     flex-direction: column;
@@ -98,6 +99,8 @@ body {
     display: flex;
     flex-direction: column;
     height: 100vh;
+    overflow: hidden;
+    /* Prevent page scroll, force panel scroll */
     transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -431,6 +434,28 @@ input[type="checkbox"] {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     overflow: hidden;
     transition: box-shadow 0.3s ease;
+    min-height: 0;
+    /* Fix nested flex scrolling */
+}
+
+/* Structure Dropdown */
+.structure-select {
+    background: rgba(56, 189, 248, 0.1);
+    color: var(--accent);
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    outline: none;
+    cursor: pointer;
+    font-family: var(--font-ui);
+    max-width: 200px;
+}
+
+.structure-select option {
+    background: #0f172a;
+    color: var(--text-primary);
 }
 
 .panel:focus-within {
@@ -597,8 +622,9 @@ textarea::-webkit-scrollbar-thumb {
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 16px;
+    /* Standard size */
+    height: 16px;
 }
 
 ::-webkit-scrollbar-track {
@@ -606,12 +632,25 @@ textarea::-webkit-scrollbar-thumb {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgba(148, 163, 184, 0.2);
-    border-radius: 4px;
+    background-color: rgba(148, 163, 184, 0.5);
+    border-radius: 10px;
+    border: 3px solid transparent;
+    background-clip: content-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: rgba(148, 163, 184, 0.4);
+    background: rgba(148, 163, 184, 0.7);
+}
+
+/* Firefox Scrollbar Support & Layout Fix */
+.code-wrapper {
+    scrollbar-width: auto;
+    scrollbar-color: rgba(148, 163, 184, 0.5) transparent;
+    min-height: 0;
+    flex: 1 1 0;
+    /* Ensure strict flex sizing */
+    min-width: 0;
+    /* Prevent blowout */
 }
 
 /* Ensure highlight.js takes full height */
@@ -837,4 +876,109 @@ input:focus+.slider {
         width: 64px;
         height: 64px;
     }
+}
+
+/* Structure Sidebar (Left Panel) */
+.structure-sidebar {
+    width: 240px;
+    background: rgba(15, 23, 42, 0.3);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: row;
+    flex-shrink: 0;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.structure-sidebar.hidden {
+    display: none;
+}
+
+.structure-sidebar.collapsed {
+    width: 40px;
+}
+
+/* Toggle Strip */
+.structure-header {
+    width: 40px;
+    flex-shrink: 0;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 1rem;
+    background: rgba(15, 23, 42, 0.2);
+}
+
+.structure-vertical-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    width: 100%;
+    outline: none;
+    transition: color 0.2s;
+}
+
+.structure-vertical-btn:hover {
+    color: var(--accent);
+}
+
+.vertical-text {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.icon-chevron {
+    transition: transform 0.3s;
+}
+
+.structure-sidebar.collapsed .icon-chevron {
+    transform: rotate(180deg);
+}
+
+/* List Container */
+.structure-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 200px;
+    /* Keep content width fixed during slide */
+}
+
+.structure-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: none;
+    padding: 0.5rem 0.8rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 6px;
+    font-family: var(--font-code);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: all 0.2s;
+}
+
+.structure-item:hover {
+    background: rgba(56, 189, 248, 0.1);
+    color: var(--accent);
+    transform: translateX(4px);
 }

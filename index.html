@@ -239,8 +239,26 @@
                         </div>
                         <button id="copy-btn" class="secondary-btn">Copy</button>
                     </div>
-                    <div class="code-wrapper" id="content-area">
-                        <pre><code id="code-output" class="hljs"></code></pre>
+                    <div class="panel-body" style="display: flex; flex: 1; min-height: 0; overflow: hidden;">
+                        <nav id="structure-sidebar" class="structure-sidebar hidden">
+                            <div class="structure-header">
+                                <button id="structure-toggle-btn" class="structure-vertical-btn"
+                                    title="Toggle Structure">
+                                    <svg class="icon-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" style="margin-bottom: 8px;">
+                                        <polyline points="15 18 9 12 15 6"></polyline>
+                                    </svg>
+                                    <span class="vertical-text">STRUCTURE</span>
+                                </button>
+                            </div>
+                            <div id="structure-list" class="structure-list">
+                                <!-- Populated by JS -->
+                            </div>
+                        </nav>
+                        <div class="code-wrapper" id="content-area">
+                            <pre><code id="code-output" class="hljs"></code></pre>
+                        </div>
                     </div>
                 </div>
             </section>
