@@ -353,6 +353,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 structureSidebar.classList.add('hidden');
             }
 
+            // Auto-collapse header
+            const hdr = document.getElementById('app-header');
+            const chev = document.getElementById('header-chevron');
+            if (hdr) hdr.classList.add('collapsed');
+            if (chev) chev.classList.add('rotate-180');
+
             switchView('output');
         } catch (e) {
             console.error(e);
@@ -828,6 +834,18 @@ document.addEventListener('DOMContentLoaded', () => {
             window.agentWindows[agentKey] = window.open(url, popupWindowName, popupFeatures);
         }
     };
+
+    // --- Header Collapse Logic ---
+    const appHeader = document.getElementById('app-header');
+    const headerToggleBtn = document.getElementById('header-toggle-btn');
+    const headerChevron = document.getElementById('header-chevron');
+
+    if (appHeader && headerToggleBtn) {
+        headerToggleBtn.addEventListener('click', () => {
+            appHeader.classList.toggle('collapsed');
+            if (headerChevron) headerChevron.classList.toggle('rotate-180');
+        });
+    }
 
     // Initialize State
     loadState();

@@ -28,7 +28,7 @@
     <div class="background-glob glob-2"></div>
 
     <main class="container">
-        <header class="header">
+        <header id="app-header" class="header">
             <img src="icon.png" class="app-logo" alt="CodeReader Logo">
             <h1><span class="highlight">Code</span>Reader</h1>
             <p
@@ -195,6 +195,13 @@
                     </div>
                 </div>
             </div>
+            <button id="header-toggle-btn" class="secondary-btn" title="Toggle Header"
+                style="margin-left: auto; padding: 0.6rem;">
+                <svg id="header-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="18 15 12 9 6 15"></polyline>
+                </svg>
+            </button>
         </div>
         <!-- View Container -->
         <div id="app-views" class="views-container">

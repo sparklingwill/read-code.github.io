@@ -977,8 +977,24 @@ input:focus+.slider {
     transition: all 0.2s;
 }
 
-.structure-item:hover {
-    background: rgba(56, 189, 248, 0.1);
-    color: var(--accent);
-    transform: translateX(4px);
+
+/* Header Collapse Logic */
+header#app-header {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height: 500px;
+    opacity: 1;
+    overflow: hidden;
+}
+
+header#app-header.collapsed {
+    max-height: 0;
+    opacity: 0;
+    margin-bottom: 0;
+    padding: 0;
+    pointer-events: none;
+}
+
+/* Chevron Rotation */
+.rotate-180 {
+    transform: rotate(180deg);
 }
