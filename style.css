@@ -975,6 +975,8 @@ input:focus+.slider {
     overflow: hidden;
     white-space: nowrap;
     transition: all 0.2s;
+    flex-shrink: 0;
+    /* Prevent squashing */
 }
 
 
